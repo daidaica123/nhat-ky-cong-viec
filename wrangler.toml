@@ -1,0 +1,4 @@
+# Khai báo cho Cloudflare Pages: không có bước build, chỉ phát hành thư mục public/.
+name = "nhat-ky-cong-viec"
+compatibility_date = "2026-09-08"
+pages_build_output_dir = "public"
