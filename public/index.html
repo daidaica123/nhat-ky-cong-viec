@@ -304,6 +304,8 @@ body.mo-vao .gseg{animation:quet .55s cubic-bezier(.2,.8,.2,1) both;animation-de
 body.vao header.top,body.vao .ngaybar,body.vao .kpi,body.vao .subnav,body.vao .card{animation:vao .42s cubic-bezier(.22,1,.36,1) both;animation-delay:calc(var(--i,0)*45ms)}
 body.vao .moc{transform-box:fill-box;transform-origin:50% 100%;animation:moc .75s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--k,0)*35ms + .35s)}
 @keyframes moc{from{transform:scaleY(0)}}
+body.vao .wipeX{transform-box:fill-box;transform-origin:left center;animation:wipeX 1.2s cubic-bezier(.2,.8,.2,1) both;animation-delay:.35s}
+@keyframes wipeX{from{transform:scaleX(0)}}
 body.vao .ve{stroke-dasharray:var(--dai);stroke-dashoffset:var(--dai);animation:ve 1s cubic-bezier(.3,.7,.2,1) .4s forwards}
 @keyframes ve{to{stroke-dashoffset:0}}
 body.vao .mo-dan{animation:modan .9s ease-out .5s both}
@@ -399,14 +401,17 @@ body.vao .no{transform-box:fill-box;transform-origin:center;animation:no .6s cub
 
 <div class="row c2c" id="s-thoiquen">
   <section class="card" style="--i:16;--gc:var(--yellow)">
+    <div class="seg" id="segGio" role="group" aria-label="Kiểu xem" style="position:absolute;top:13px;right:16px;z-index:2"><button data-m="cot" aria-pressed="true">Cột</button><button data-m="vung" aria-pressed="false">Vùng</button></div>
     <h2><span class="tag">Thói quen</span>Khung giờ nào làm việc gì</h2>
-    <p class="d">Cộng dồn cả phạm vi: mỗi cột là một khung giờ trong ngày, chia theo mảng.</p>
+    <p class="d" id="d-gio"></p>
     <div class="legend" id="lg4"></div>
     <div class="box" id="c-gio"></div>
   </section>
   <section class="card" style="--i:17;--gc:var(--yellow)">
-    <h2><span class="tag">Thói quen</span>Thứ nào làm nhiều nhất</h2>
-    <p class="d">Giờ làm thực tế trung bình theo thứ trong tuần.</p>
+    <div class="seg" id="segThu" role="group" aria-label="Kiểu xem" style="position:absolute;top:13px;right:16px;z-index:2"><button data-m="tuan" aria-pressed="true">Theo tuần</button><button data-m="thu" aria-pressed="false">Theo thứ</button></div>
+    <h2 id="h-thu"></h2>
+    <p class="d" id="d-thu"></p>
+    <div class="legend" id="lg5"></div>
     <div class="box" id="c-thu"></div>
   </section>
 </div>
@@ -437,7 +442,7 @@ body.vao .no{transform-box:fill-box;transform-origin:center;animation:no .6s cub
 <div class="tip" id="tip" role="tooltip"></div>
 
 <script>
-const D = {"tasks":[{"name":"HTML Vận hành","mang":0},{"name":"Luồng xử lý alert tự động & AI detection","mang":0},{"name":"Check F2DR hằng ngày","mang":0},{"name":"Báo cáo & Slide (thực trạng, Word/Excel/PPT)","mang":0},{"name":"Project ERM","mang":1},{"name":"Phối hợp fix bug F2DR (VCS, PTDL, KTDV)","mang":0},{"name":"Đoàn Thanh Niên & Event trung tâm","mang":2},{"name":"Họp","mang":2},{"name":"Impact score","mang":0},{"name":"Task ad hoc","mang":2},{"name":"Nghiên cứu - Tự học","mang":2}],"mang":[{"name":"F2DR"},{"name":"ERM"},{"name":"Other"}],"days":[{"d":"2026-09-21","e":[[8.0,8.5,4],[8.5,9.0,7],[9.0,9.5,4],[9.5,10.5,4],[10.5,12.0,4],[13.5,14.5,4],[9.5,17.8333,0],[14.5,15.5,6],[16.0,17.0,0]]},{"d":"2026-09-22","e":[[8.25,8.6667,5],[8.75,10.0,5],[8.75,10.0,0],[9.0,10.5,0],[10.0,11.0,8],[10.0,11.0,9],[10.75,12.0,5],[10.75,12.0,5],[13.75,17.0,8],[16.5,17.5,5],[14.0,17.5,0]]},{"d":"2026-09-23","e":[[8.5,9.25,7],[9.25,9.5,5],[9.5,12.0,0],[9.75,10.25,2],[10.25,10.5,0],[10.5,11.0,6],[11.0,11.6667,3],[13.5,14.0,6],[14.0,14.25,5],[14.25,17.0,0],[17.0,17.5,3],[16.5,17.0,2]]},{"d":"2026-09-24","e":[[8.0,9.0,0],[8.0,9.0,2],[9.0,10.3333,6],[10.4167,11.0,2],[11.0,12.0,6],[13.5,15.0,0],[15.0,16.0,6],[16.0,17.5,6],[16.0,17.5,0]]},{"d":"2026-09-25","e":[[8.5,17.5,0],[16.0,18.0,0],[13.5,15.0,7],[9.0,12.0,9],[8.5,9.0,2]]},{"d":"2026-09-28","e":[[8.5,17.5,0],[8.5,17.5,1],[9.0,11.0,1],[14.0,15.5,4]]},{"d":"2026-09-29","e":[[8.0,8.5,2],[8.5,9.5,7],[9.5,12.0,1],[13.5,15.0,3],[13.5,17.0,1]]},{"d":"2026-09-30","e":[[8.0,9.0,2],[8.5,9.0,7],[9.0,9.25,2],[9.5,12.0,3],[9.5,12.0,1],[13.5,15.0,3],[13.5,15.0,1],[15.5,17.5,10],[15.5,17.5,1]]},{"d":"2026-10-01","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,9.5,3],[9.5,10.5,10],[10.5,11.0,0],[11.0,12.0,1],[13.75,15.5,10],[16.0,17.5,6]]},{"d":"2026-10-02","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,9.5,6],[9.5,12.0,6],[11.0,12.0,6],[13.5,17.5,6]]},{"d":"2026-10-05","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,11.0,6],[11.0,12.0,5],[13.5,14.0,7],[14.0,16.0,9],[16.0,17.5,9]]},{"d":"2026-10-06","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,10.0,7],[10.0,10.5,6],[10.5,11.0,9],[11.0,12.0,9],[14.0,15.0,3],[15.0,16.5,4],[16.5,17.0,7],[17.0,17.5,10]]},{"d":"2026-10-07","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,11.0,0],[11.0,12.0,3],[13.5,14.0,3],[14.0,15.5,4],[15.5,16.0,6],[16.0,16.5,9],[16.5,17.5,9]]},{"d":"2026-10-08","e":[[8.0,8.5,0],[8.5,9.0,2],[8.0,9.0,7],[9.0,10.5,7],[11.0,12.0,7],[14.0,15.0,10],[15.0,16.0,9],[16.0,17.5,10]]}],"last":"2026-10-08","built":"08/10 16:28"};
+const D = {"tasks":[{"name":"HTML Vận hành","mang":0},{"name":"Luồng xử lý alert tự động & AI detection","mang":0},{"name":"Check F2DR hằng ngày","mang":0},{"name":"Báo cáo & Slide (thực trạng, Word/Excel/PPT)","mang":0},{"name":"Project ERM","mang":1},{"name":"Phối hợp fix bug F2DR (VCS, PTDL, KTDV)","mang":0},{"name":"Đoàn Thanh Niên & Event trung tâm","mang":2},{"name":"Họp","mang":2},{"name":"Impact score","mang":0},{"name":"Task ad hoc","mang":2},{"name":"Nghiên cứu - Tự học","mang":2}],"mang":[{"name":"F2DR"},{"name":"ERM"},{"name":"Other"}],"days":[{"d":"2026-09-21","e":[[8.0,8.5,4],[8.5,9.0,7],[9.0,9.5,4],[9.5,10.5,4],[10.5,12.0,4],[13.5,14.5,4],[9.5,17.8333,0],[14.5,15.5,6],[16.0,17.0,0]]},{"d":"2026-09-22","e":[[8.25,8.6667,5],[8.75,10.0,5],[8.75,10.0,0],[9.0,10.5,0],[10.0,11.0,8],[10.0,11.0,9],[10.75,12.0,5],[10.75,12.0,5],[13.75,17.0,8],[16.5,17.5,5],[14.0,17.5,0]]},{"d":"2026-09-23","e":[[8.5,9.25,7],[9.25,9.5,5],[9.5,12.0,0],[9.75,10.25,2],[10.25,10.5,0],[10.5,11.0,6],[11.0,11.6667,3],[13.5,14.0,6],[14.0,14.25,5],[14.25,17.0,0],[17.0,17.5,3],[16.5,17.0,2]]},{"d":"2026-09-24","e":[[8.0,9.0,0],[8.0,9.0,2],[9.0,10.3333,6],[10.4167,11.0,2],[11.0,12.0,6],[13.5,15.0,0],[15.0,16.0,6],[16.0,17.5,6],[16.0,17.5,0]]},{"d":"2026-09-25","e":[[8.5,17.5,0],[16.0,18.0,0],[13.5,15.0,7],[9.0,12.0,9],[8.5,9.0,2]]},{"d":"2026-09-28","e":[[8.5,17.5,0],[8.5,17.5,1],[9.0,11.0,1],[14.0,15.5,4]]},{"d":"2026-09-29","e":[[8.0,8.5,2],[8.5,9.5,7],[9.5,12.0,1],[13.5,15.0,3],[13.5,17.0,1]]},{"d":"2026-09-30","e":[[8.0,9.0,2],[8.5,9.0,7],[9.0,9.25,2],[9.5,12.0,3],[9.5,12.0,1],[13.5,15.0,3],[13.5,15.0,1],[15.5,17.5,10],[15.5,17.5,1]]},{"d":"2026-10-01","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,9.5,3],[9.5,10.5,10],[10.5,11.0,0],[11.0,12.0,1],[13.75,15.5,10],[16.0,17.5,6]]},{"d":"2026-10-02","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,9.5,6],[9.5,12.0,6],[11.0,12.0,6],[13.5,17.5,6]]},{"d":"2026-10-05","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,11.0,6],[11.0,12.0,5],[13.5,14.0,7],[14.0,16.0,9],[16.0,17.5,9]]},{"d":"2026-10-06","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,10.0,7],[10.0,10.5,6],[10.5,11.0,9],[11.0,12.0,9],[14.0,15.0,3],[15.0,16.5,4],[16.5,17.0,7],[17.0,17.5,10]]},{"d":"2026-10-07","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,11.0,0],[11.0,12.0,3],[13.5,14.0,3],[14.0,15.5,4],[15.5,16.0,6],[16.0,16.5,9],[16.5,17.5,9]]},{"d":"2026-10-08","e":[[8.0,8.5,0],[8.5,9.0,2],[8.0,9.0,7],[9.0,10.5,7],[11.0,12.0,7],[14.0,15.0,10],[15.0,16.0,9],[16.0,17.5,10]]}],"last":"2026-10-08","built":"09/10 08:18"};
 (function(){
 "use strict";
 /* ═════ tiện ích ═════ */
@@ -496,7 +501,7 @@ function tinh(d){
 const ALL = D.days.map(tinh), CO = ALL.filter(x => x.n), byD = {};
 ALL.forEach(x => { byD[x.d] = x; });
 const DS = CO.map(x => x.d);
-const S = {cach:'ngay', ngay:'', tu:'', den:'', nhanh:'', cal:null, mang:-1, xep:'h', soi:null, cu:false, bk:'h', bd:'desc', mo:null};
+const S = {gio:'cot', thu:'tuan', cach:'ngay', ngay:'', tu:'', den:'', nhanh:'', cal:null, mang:-1, xep:'h', soi:null, cu:false, bk:'h', bd:'desc', mo:null};
 
 function pham(){
   if(S.cach === 'khoang' && S.tu && S.den) return ALL.filter(x => x.d >= S.tu && x.d <= S.den);
@@ -890,7 +895,20 @@ function veNhiet(A){
 }
 
 /* ═════ ⑧ khung giờ trong ngày ═════ */
-function veGio(days){
+/* đường cong đơn điệu (không vượt quá dữ liệu, không lõm xuống dưới 0) đi qua các điểm [x, y] */
+function mono(P){
+  const n = P.length; if(n < 2) return '';
+  const dx = [], m = [], tg = new Array(n);
+  for(let i = 0; i < n-1; i++){ dx[i] = P[i+1][0] - P[i][0]; m[i] = (P[i+1][1] - P[i][1])/dx[i]; }
+  tg[0] = m[0]; tg[n-1] = m[n-2];
+  for(let i = 1; i < n-1; i++) tg[i] = m[i-1]*m[i] <= 0 ? 0 : 2*m[i-1]*m[i]/(m[i-1] + m[i]);
+  let d = `M${P[0][0].toFixed(1)} ${P[0][1].toFixed(1)}`;
+  for(let i = 0; i < n-1; i++){ const h = dx[i]/3;
+    d += `C${(P[i][0]+h).toFixed(1)} ${(P[i][1]+tg[i]*h).toFixed(1)} ${(P[i+1][0]-h).toFixed(1)} ${(P[i+1][1]-tg[i+1]*h).toFixed(1)} ${P[i+1][0].toFixed(1)} ${P[i+1][1].toFixed(1)}`; }
+  return d;
+}
+
+function veGioVung(days){
   const host = $('c-gio'), co = days.filter(x => x.n);
   $('lg4').innerHTML = D.mang.map((m, i) => `<span><i style="background:${HEX[i]}"></i>${esc(m.name)}</span>`).join('');
   if(!co.length){ host.innerHTML = '<div class="trong">Chưa có dữ liệu</div>'; return; }
@@ -898,14 +916,71 @@ function veGio(days){
   const bins = [], tk = [];
   for(let h = h0; h < h1; h++){ bins.push(D.mang.map(() => 0)); tk.push({}); }
   co.forEach(x => x.es.forEach(e => { for(let h = h0; h < h1; h++){ const o = Math.max(0, Math.min(e.e, h+1) - Math.max(e.s, h)); if(o){ bins[h-h0][D.tasks[e.t].mang] += o; tk[h-h0][e.t] = (tk[h-h0][e.t] || 0) + o; } } }));
+  const Wd = W(host), H = 260, L = 34, R = 8, T = 14, B = 30, pw = Wd - L - R, ph = H - T - B, n = bins.length, slot = pw/n, nm = D.mang.length;
+  const sums = bins.map(b => b.reduce((s, q) => s + q, 0)), g = niceMax(Math.max(1, ...sums)), Y = q => T + ph - q/g.top*ph;
+  const X = h => L + (h - h0)/(h1 - h0)*pw, cx = i => X(h0 + i + .5);
+  /* ranh giới xếp chồng: cum[k][i] = tổng của các mảng 0..k ở giờ i; thêm điểm 0 ở hai đầu cho đường cong thoai thoải */
+  const cum = D.mang.map((m, k) => bins.map(b => b.slice(0, k+1).reduce((s, q) => s + q, 0)));
+  const xs = [X(h0), ...bins.map((b, i) => cx(i)), X(h1)];
+  const edge = k => [0, ...cum[k], 0];
+  const pts = k => edge(k).map((v, i) => [xs[i], Y(v)]);
+  const zero = xs.map(x => [x, Y(0)]);
+  let s = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Khung giờ làm việc, chia theo mảng"><defs>` +
+    `<clipPath id="clipGio"><rect class="wipeX" x="${L}" y="0" width="${pw+R}" height="${H}"/></clipPath>` +
+    D.mang.map((m, k) => `<linearGradient id="gGio${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${HEX[k]}" stop-opacity=".78"/><stop offset="1" stop-color="${HEX[k]}" stop-opacity=".16"/></linearGradient>`).join('') + `</defs>`;
+  for(let q = 0; q <= g.top + 1e-9; q += g.step) s += `<line x1="${L}" x2="${Wd-R}" y1="${Y(q)}" y2="${Y(q)}" stroke="rgba(110,128,168,${q ? .12 : .4})" ${q ? 'stroke-dasharray="3 4"' : ''}/><text class="axm" x="${L-8}" y="${Y(q)+4}" text-anchor="end">${q}</text>`;
+  s += '<g clip-path="url(#clipGio)">';
+  for(let k = nm-1; k >= 0; k--){
+    const top = mono(pts(k)), lower = k ? mono(pts(k-1).slice().reverse()) : mono(zero.slice().reverse());
+    s += `<path d="${top} L${lower.slice(1)} Z" fill="url(#gGio${k})"/>`;
+  }
+  for(let k = 0; k < nm; k++) s += `<path d="${mono(pts(k))}" fill="none" stroke="${HEX[k]}" stroke-width="1.9" stroke-linejoin="round" style="filter:drop-shadow(0 0 5px ${HEX[k]})"/>`;
+  s += '</g>';
+  /* điểm cao nhất và điểm thấp nhất (không tính hai đầu) được đánh dấu */
+  const ip = sums.indexOf(Math.max(...sums));
+  const mid = sums.map((v, i) => [v, i]).filter(z => z[1] > 0 && z[1] < n-1 && Math.abs(z[1] - ip) >= 2);
+  const it = mid.length ? mid.reduce((a, c) => c[0] < a[0] ? c : a)[1] : -1, showT = it >= 0 && sums[it] < .45*sums[ip];
+  const flag = (i, txt, col) => { const w = txt.length*6.6 + 18, x = Math.min(Math.max(cx(i), L + w/2), Wd - R - w/2), y = Math.max(2, Y(sums[i]) - 30);
+    return `<circle cx="${cx(i)}" cy="${Y(sums[i])}" r="4.5" fill="#05080f" stroke="${col}" stroke-width="2"/><g><rect x="${x-w/2}" y="${y}" width="${w}" height="18" rx="9" fill="rgba(5,8,15,.72)" stroke="${col}" stroke-opacity=".7"/><text class="valb" x="${x}" y="${y+12.5}" text-anchor="middle" style="fill:${col}">${txt}</text></g>`; };
+  s += flag(ip, `cao điểm ${h0+ip}h · ${f1(sums[ip])}`, 'var(--orange)');
+  if(showT) s += flag(it, `thấp ${h0+it}h · ${f1(sums[it])}`, 'var(--accent)');
+  for(let i = 0; i < n; i++) s += `<text class="axm" x="${cx(i)}" y="${H-B+18}" text-anchor="middle">${h0+i}h</text>`;
+  s += `<g id="gioX" style="display:none;pointer-events:none"><line id="gioXl" y1="${T}" y2="${T+ph}" stroke="rgba(255,255,255,.35)" stroke-dasharray="3 3"/>` + D.mang.map((m, k) => `<circle id="gioXc${k}" r="4" fill="${HEX[k]}" stroke="#05080f" stroke-width="1.5"/>`).join('') + `</g>`;
+  for(let i = 0; i < n; i++) s += `<rect class="hit" data-i="${i}" x="${L+slot*i}" y="${T}" width="${slot}" height="${ph}" tabindex="0"/>`;
+  host.innerHTML = s + '</svg>';
+  const gx = host.querySelector('#gioX');
+  const mark = i => { gx.style.display = ''; host.querySelector('#gioXl').setAttribute('x1', cx(i)); host.querySelector('#gioXl').setAttribute('x2', cx(i));
+    D.mang.forEach((m, k) => { const c = host.querySelector('#gioXc' + k); c.setAttribute('cx', cx(i)); c.setAttribute('cy', Y(cum[k][i])); }); };
+  host.querySelectorAll('.hit').forEach(r => { const i = +r.dataset.i;
+    ['mouseenter', 'focus'].forEach(ev => r.addEventListener(ev, () => mark(i)));
+    ['mouseleave', 'blur'].forEach(ev => r.addEventListener(ev, () => { gx.style.display = 'none'; }));
+    tip(r, () => `<div class="th">${clock(h0+i)} – ${clock(h0+i+1)} · cộng ${co.length} ngày</div>` + D.mang.map((m, k) => tr(esc(m.name), bins[i][k] ? hm(bins[i][k]) : '–', HEX[k])).join('') + '<div class="sep"></div>' + Object.keys(tk[i]).map(k => [+k, tk[i][k]]).sort((a, b) => b[1] - a[1]).slice(0, 4).map(p => tr(esc(D.tasks[p[0]].name), hm(p[1]), tc(p[0]))).join('')); });
+}
+
+function gioBins(co){
+  const h0 = Math.floor(Math.min(...co.map(x => x.s0))), h1 = Math.ceil(Math.max(...co.map(x => x.e1)));
+  const bins = [], tk = [];
+  for(let h = h0; h < h1; h++){ bins.push(D.mang.map(() => 0)); tk.push({}); }
+  co.forEach(x => x.es.forEach(e => { for(let h = h0; h < h1; h++){ const o = Math.max(0, Math.min(e.e, h+1) - Math.max(e.s, h)); if(o){ bins[h-h0][D.tasks[e.t].mang] += o; tk[h-h0][e.t] = (tk[h-h0][e.t] || 0) + o; } } }));
+  return {h0, h1, bins, tk};
+}
+
+function veGioCot(days){
+  const host = $('c-gio'), co = days.filter(x => x.n);
+  $('lg4').innerHTML = D.mang.map((m, i) => `<span><i style="background:${HEX[i]}"></i>${esc(m.name)}</span>`).join('');
+  if(!co.length){ host.innerHTML = '<div class="trong">Chưa có dữ liệu</div>'; return; }
+  const {h0, bins, tk} = gioBins(co);
   const Wd = W(host), H = 260, L = 34, R = 8, T = 14, B = 30, pw = Wd - L - R, ph = H - T - B, n = bins.length, slot = pw/n, bw = Math.min(40, slot*.66);
   const sums = bins.map(b => b.reduce((s, q) => s + q, 0)), g = niceMax(Math.max(1, ...sums)), Y = q => T + ph - q/g.top*ph, top = Math.max(...sums);
-  let s = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Khung giờ làm việc">`;
+  let s = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Khung giờ làm việc, chia theo mảng"><defs>` +
+    D.mang.map((m, k) => `<linearGradient id="gGioC${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${HEX[k]}" stop-opacity=".98"/><stop offset="1" stop-color="${HEX[k]}" stop-opacity=".6"/></linearGradient>`).join('') + `</defs>`;
   for(let q = 0; q <= g.top + 1e-9; q += g.step) s += `<line x1="${L}" x2="${Wd-R}" y1="${Y(q)}" y2="${Y(q)}" stroke="rgba(110,128,168,${q ? .12 : .4})" ${q ? 'stroke-dasharray="3 4"' : ''}/><text class="axm" x="${L-8}" y="${Y(q)+4}" text-anchor="end">${q}</text>`;
   bins.forEach((b, i) => {
-    const cx = L + slot*i + slot/2; let c = 0;
-    b.forEach((q, k) => { if(!q) return; const y1 = Y(c + q), y0 = Y(c); s += `<rect class="moc" style="--k:${i}" x="${cx-bw/2}" y="${y1}" width="${bw}" height="${Math.max(0, y0-y1-1)}" rx="3" fill="${HEX[k]}" fill-opacity=".85"/>`; c += q; });
-    if(sums[i]) s += `<text class="${sums[i] === top ? 'valb' : 'val'}" x="${cx}" y="${Y(sums[i])-6}" text-anchor="middle"${sums[i] === top ? ' style="fill:var(--orange)"' : ''}>${f1(sums[i])}</text>`;
+    const cx = L + slot*i + slot/2; let c = 0, last = -1;
+    b.forEach((q, k) => { if(q) last = k; });
+    b.forEach((q, k) => { if(!q) return; const y1 = Y(c + q), y0 = Y(c), pk = sums[i] === top && k === last;
+      s += `<rect class="moc" style="--k:${i}${pk ? ';filter:drop-shadow(0 0 7px rgba(255,149,80,.45))' : ''}" x="${cx-bw/2}" y="${y1}" width="${bw}" height="${Math.max(0, y0-y1-1.5)}" rx="${Math.min(5, bw/2)}" fill="url(#gGioC${k})"/>`; c += q; });
+    if(sums[i]) s += `<text class="${sums[i] === top ? 'valb' : 'val'}" x="${cx}" y="${Y(sums[i])-7}" text-anchor="middle"${sums[i] === top ? ' style="fill:var(--orange)"' : ''}>${f1(sums[i])}</text>`;
     s += `<text class="axm" x="${cx}" y="${H-B+18}" text-anchor="middle">${h0+i}h</text><rect class="hit" data-i="${i}" x="${L+slot*i+1}" y="${T}" width="${slot-2}" height="${ph}" rx="6" tabindex="0"/>`;
   });
   host.innerHTML = s + '</svg>';
@@ -913,25 +988,87 @@ function veGio(days){
     tip(r, () => `<div class="th">${clock(h0+i)} – ${clock(h0+i+1)} · cộng ${co.length} ngày</div>` + D.mang.map((m, k) => tr(esc(m.name), bins[i][k] ? hm(bins[i][k]) : '–', HEX[k])).join('') + '<div class="sep"></div>' + Object.keys(tk[i]).map(k => [+k, tk[i][k]]).sort((a, b) => b[1] - a[1]).slice(0, 4).map(p => tr(esc(D.tasks[p[0]].name), hm(p[1]), tc(p[0]))).join('')); });
 }
 
+function veGio(days){
+  if(!veGio.init){ veGio.init = 1; try{ const m = localStorage.getItem('nkGio'); if(m === 'cot' || m === 'vung') S.gio = m; }catch(e){} }
+  const m = S.gio === 'vung' ? 'vung' : 'cot';
+  $('segGio').querySelectorAll('button').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.m === m)); b.onclick = () => { S.gio = b.dataset.m; try{ localStorage.setItem('nkGio', S.gio); }catch(e){} tipTat(); veGio(pham()); }; });
+  $('d-gio').textContent = m === 'vung' ? 'Cộng dồn cả phạm vi: đường cong cho thấy giờ nào làm nhiều, chia theo mảng.' : 'Cộng dồn cả phạm vi: mỗi cột là một khung giờ, chia theo mảng.';
+  (m === 'vung' ? veGioVung : veGioCot)(days);
+}
+
 /* ═════ ⑨ theo thứ ═════ */
-function veThu(days){
-  const host = $('c-thu'), co = days.filter(x => x.n), wd = [1,2,3,4,5].map(k => { const a = co.filter(x => pd(x.d).getUTCDay() === k); return {k, n:a.length, tb: a.length ? a.reduce((s, x) => s + x.real, 0)/a.length : 0, tt: a.length ? a.reduce((s, x) => s + x.total, 0)/a.length : 0}; });
-  const Wd = W(host), H = 260, T = 26, B = 46, ph = H - T - B, slot = Wd/5, bw = Math.min(54, slot*.55), mx = Math.max(...wd.map(w => w.tt), 1), best = Math.max(...wd.map(w => w.tb));
-  const Y = q => T + ph - q/mx*ph;
-  let s = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Giờ trung bình theo thứ"><defs><linearGradient id="gT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset="1" stop-color="#b8860b" stop-opacity=".6"/></linearGradient></defs>`;
-  wd.forEach((w, i) => {
-    const cx = slot*i + slot/2;
-    s += `<rect x="${cx-bw/2}" y="${T}" width="${bw}" height="${ph}" rx="${bw/2}" fill="rgba(28,42,71,.45)"/>`;
-    if(w.n){
-      s += `<rect class="moc" style="--k:${i}" x="${cx-bw/2}" y="${Y(w.tt)}" width="${bw}" height="${Y(0)-Y(w.tt)}" rx="${bw/2}" fill="rgba(65,84,138,.55)"/>`;
-      s += `<rect class="moc" style="--k:${i}${w.tb === best ? ';filter:drop-shadow(0 0 10px #ffd84f)' : ''}" x="${cx-bw/2+6}" y="${Y(w.tb)}" width="${bw-12}" height="${Y(0)-Y(w.tb)}" rx="${(bw-12)/2}" fill="url(#gT)"/>`;
-      s += `<text class="valb" x="${cx}" y="${Y(w.tt)-8}" text-anchor="middle" style="fill:${w.tb === best ? 'var(--yellow)' : 'var(--text)'}">${hm(w.tb)}</text>`;
-    } else s += `<text class="ax" x="${cx}" y="${Y(0)-10}" text-anchor="middle">–</text>`;
-    s += `<text class="axb" x="${cx}" y="${H-B+20}" text-anchor="middle">${THU[w.k]}</text><text class="ax" x="${cx}" y="${H-B+36}" text-anchor="middle">${w.n} ngày</text><rect class="hit" data-i="${i}" x="${slot*i+2}" y="${T-20}" width="${slot-4}" height="${ph+40}" rx="10" tabindex="0"/>`;
+function veTuan(days){
+  const host = $('c-thu'), lg = $('lg5');
+  const mon = s => { const q = pd(s); q.setUTCDate(q.getUTCDate() - (q.getUTCDay() + 6) % 7); return q.toISOString().slice(0, 10); };
+  const wk = {};
+  days.forEach(x => { const k = pd(x.d).getUTCDay(); if(!x.n || k < 1 || k > 5) return; (wk[mon(x.d)] = wk[mon(x.d)] || {})[k] = x; });
+  const keys = Object.keys(wk).sort().slice(-14), nb = keys.length;
+  if(!nb){ host.innerHTML = '<div class="trong">Chưa có dữ liệu</div>'; lg.innerHTML = ''; return; }
+  const info = keys.map(k => { const ds = Object.values(wk[k]), n = ds.length, sum = ds.reduce((s, x) => s + x.real, 0); return {k, n, sum, avg: sum/n, days:wk[k]}; });
+  const last = info[nb-1], prev = nb > 1 ? info[nb-2] : null, dl = prev ? last.avg - prev.avg : 0;
+  lg.innerHTML = (nb > 1 ? `<span><i style="background:#2ee8ff"></i>Các tuần trước</span>` : '') +
+    `<span><i style="background:#ffd84f"></i>Tuần ${dm(last.k)}${prev ? ` · <b style="color:${dl >= 0 ? 'var(--green)' : 'var(--orange)'}">${Math.abs(dl) < .01 ? 'bằng tuần trước' : (dl > 0 ? '▲' : '▼') + hm(Math.abs(dl))}</b>` : ''}</span>` +
+    `<span><i class="ln" style="background:rgba(255,255,255,.6)"></i>8 giờ</span>`;
+  const Wd = W(host), H = 260, L = 34, R = 8, T = 14, B = 30, pw = Wd - L - R, ph = H - T - B, slot = pw/nb, bw = Math.max(8, Math.min(46, slot*.6));
+  const g = niceMax(Math.max(8, ...info.map(w => w.avg))), Y = q => T + ph - q/g.top*ph, cxo = i => L + slot*i + slot/2;
+  const lbl = slot >= 50 ? v => hm(v) : v => f1(v);
+  let s = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Giờ làm thực tế trung bình mỗi ngày theo từng tuần"><defs>` +
+    `<linearGradient id="gWkNew" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset="1" stop-color="#b8860b" stop-opacity=".7"/></linearGradient>` +
+    `<linearGradient id="gWkOld" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7df3ff"/><stop offset="1" stop-color="#0e7490" stop-opacity=".65"/></linearGradient></defs>`;
+  for(let q = 0; q <= g.top + 1e-9; q += g.step) s += `<line x1="${L}" x2="${Wd-R}" y1="${Y(q)}" y2="${Y(q)}" stroke="rgba(110,128,168,${q ? .12 : .4})" ${q ? 'stroke-dasharray="3 4"' : ''}/><text class="axm" x="${L-8}" y="${Y(q)+4}" text-anchor="end">${q}</text>`;
+  s += `<line x1="${L}" x2="${Wd-R}" y1="${Y(8)}" y2="${Y(8)}" stroke="rgba(255,255,255,.4)" stroke-dasharray="5 4"/>`;
+  if(nb > 1) s += `<polyline points="${info.map((w, i) => cxo(i).toFixed(1) + ',' + Y(w.avg).toFixed(1)).join(' ')}" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1.4" stroke-linejoin="round"/>`;
+  info.forEach((w, i) => {
+    const isL = i === nb - 1, x = cxo(i) - bw/2, part = w.n < 5;
+    s += `<rect class="moc" style="--k:${i}${isL ? ';filter:drop-shadow(0 0 9px rgba(255,216,79,.55))' : ''}${part && !isL ? ';opacity:.78' : ''}" x="${x}" y="${Y(w.avg)}" width="${bw}" height="${Math.max(0, Y(0)-Y(w.avg))}" rx="${Math.min(6, bw/2)}" fill="url(#${isL ? 'gWkNew' : 'gWkOld'})"/>` +
+         `<circle cx="${cxo(i).toFixed(1)}" cy="${Y(w.avg).toFixed(1)}" r="${isL ? 4 : 2.6}" fill="${isL ? '#ffd84f' : '#e6f7ff'}"/>` +
+         `<text class="${isL ? 'valb' : 'val'}" x="${cxo(i)}" y="${Y(w.avg)-9}" text-anchor="middle"${isL ? ' style="fill:var(--yellow)"' : ''}>${lbl(w.avg)}</text>` +
+         `<text class="axm" x="${cxo(i)}" y="${H-B+18}" text-anchor="middle">${dm(w.k)}</text>` +
+         `<rect class="hit" data-i="${i}" x="${L+slot*i+1}" y="${T}" width="${slot-2}" height="${ph}" rx="6" tabindex="0"/>`;
   });
   host.innerHTML = s + '</svg>';
-  host.querySelectorAll('.hit').forEach(r => { const w = wd[+r.dataset.i];
-    tip(r, () => `<div class="th">${THU[w.k]} · ${w.n} ngày đã ghi</div>${tr('TB giờ làm thực tế', w.n ? hm(w.tb) : '–', 'var(--yellow)')}${tr('TB tổng giờ công việc', w.n ? hm(w.tt) : '–', 'var(--ctx-hi)')}`); });
+  host.querySelectorAll('.hit').forEach(r => { const i = +r.dataset.i, w = info[i], pv = i > 0 ? info[i-1] : null;
+    const end = (() => { const q = pd(w.k); q.setUTCDate(q.getUTCDate() + 4); return q.toISOString().slice(0, 10); })();
+    tip(r, () => `<div class="th">Tuần ${dm(w.k)} – ${dm(end)} · ${w.n}/5 ngày có số liệu</div>${tr('TB giờ thực tế mỗi ngày', hm(w.avg), i === nb - 1 ? '#ffd84f' : '#2ee8ff')}${tr('Tổng giờ thực tế cả tuần', hm(w.sum))}<div class="sep"></div>` +
+      [1,2,3,4,5].map(k => tr(THU[k] + (w.days[k] ? ' ' + dm(w.days[k].d) : ''), w.days[k] ? hm(w.days[k].real) : '–')).join('') +
+      (pv ? `<div class="sep"></div>${tr('TB so với tuần ' + dm(pv.k), (w.avg >= pv.avg ? '+' : '−') + hm(Math.abs(w.avg - pv.avg)))}` : '')); });
+}
+
+function veTheoThu(days){
+  const host = $('c-thu'), lg = $('lg5'), co = days.filter(x => x.n);
+  lg.innerHTML = `<span><i style="background:#ffd84f"></i>Giờ làm thực tế</span><span><i style="background:var(--ctx-hi)"></i>Tổng giờ công việc</span>`;
+  const wd = [1,2,3,4,5].map(k => { const a = co.filter(x => pd(x.d).getUTCDay() === k); return {k, a, n:a.length, tb: a.length ? a.reduce((s, x) => s + x.real, 0)/a.length : 0, tt: a.length ? a.reduce((s, x) => s + x.total, 0)/a.length : 0}; });
+  if(!co.length){ host.innerHTML = '<div class="trong">Chưa có dữ liệu</div>'; return; }
+  const Wd = W(host), H = 260, L = 34, R = 8, T = 14, B = 30, pw = Wd - L - R, ph = H - T - B, slot = pw/5;
+  const g = niceMax(Math.max(1, ...wd.map(w => w.tt))), Y = q => T + ph - q/g.top*ph, best = Math.max(...wd.map(w => w.tb));
+  const bw = Math.max(12, Math.min(40, slot*.3)), gap = 5, gw = bw*2 + gap, lbl = bw + gap >= 36 ? hm : f1;
+  let s = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Trung bình giờ làm thực tế và tổng giờ công việc theo thứ"><defs>` +
+    `<linearGradient id="gThuReal" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset="1" stop-color="#b8860b" stop-opacity=".7"/></linearGradient>` +
+    `<linearGradient id="gThuTot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fa4de"/><stop offset="1" stop-color="#41548a" stop-opacity=".75"/></linearGradient></defs>`;
+  for(let q = 0; q <= g.top + 1e-9; q += g.step) s += `<line x1="${L}" x2="${Wd-R}" y1="${Y(q)}" y2="${Y(q)}" stroke="rgba(110,128,168,${q ? .12 : .4})" ${q ? 'stroke-dasharray="3 4"' : ''}/><text class="axm" x="${L-8}" y="${Y(q)+4}" text-anchor="end">${q}</text>`;
+  wd.forEach((w, i) => {
+    const k = w.k, x0 = L + slot*i + slot/2 - gw/2, isB = w.n && w.tb === best;
+    if(w.n){
+      s += `<rect class="moc" style="--k:${i*2}${isB ? ';filter:drop-shadow(0 0 8px rgba(255,216,79,.55))' : ''}" x="${x0}" y="${Y(w.tb)}" width="${bw}" height="${Math.max(0, Y(0)-Y(w.tb))}" rx="5" fill="url(#gThuReal)"/>` +
+           `<rect class="moc" style="--k:${i*2+1}" x="${x0+bw+gap}" y="${Y(w.tt)}" width="${bw}" height="${Math.max(0, Y(0)-Y(w.tt))}" rx="5" fill="url(#gThuTot)"/>` +
+           `<text class="${isB ? 'valb' : 'val'}" x="${x0+bw/2}" y="${Y(w.tb)-6}" text-anchor="middle" style="fill:${isB ? 'var(--yellow)' : '#e8d9a0'}">${lbl(w.tb)}</text>` +
+           `<text class="val" x="${x0+bw+gap+bw/2}" y="${Y(w.tt)-6}" text-anchor="middle">${lbl(w.tt)}</text>`;
+    } else s += `<text class="ax" x="${x0+gw/2}" y="${Y(0)-8}" text-anchor="middle">–</text>`;
+    s += `<text class="axm" x="${x0+gw/2}" y="${H-B+18}" text-anchor="middle">${THU[k]} · ${w.n} ngày</text><rect class="hit" data-i="${i}" x="${L+slot*i+1}" y="${T}" width="${slot-2}" height="${ph}" rx="6" tabindex="0"/>`;
+  });
+  host.innerHTML = s + '</svg>';
+  host.querySelectorAll('.hit').forEach(r => { const w = wd[+r.dataset.i]; if(!w.n) return;
+    tip(r, () => `<div class="th">${THU[w.k]} · trung bình trên ${w.n} ngày đã ghi</div>${tr('TB giờ làm thực tế', hm(w.tb), '#ffd84f')}${tr('TB tổng giờ công việc', hm(w.tt), 'var(--ctx-hi)')}${tr('TB làm cùng lúc', hm(w.tt - w.tb))}<div class="sep"></div>` +
+      w.a.slice(-6).map(x => tr(dm(x.d), hm(x.real) + ' / ' + hm(x.total))).join('') + `<div class="goi">thực tế / cộng dồn từng ngày${w.n > 6 ? ' · chỉ hiện 6 ngày gần nhất' : ''}${w.n < 4 ? ' · mới ' + w.n + ' ngày, số liệu còn ít' : ''}</div>`); });
+}
+
+function veThu(days){
+  if(!veThu.init){ veThu.init = 1; try{ const m = localStorage.getItem('nkThu'); if(m === 'tuan' || m === 'thu') S.thu = m; }catch(e){} }
+  const m = S.thu === 'thu' ? 'thu' : 'tuan';
+  $('segThu').querySelectorAll('button').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.m === m)); b.onclick = () => { S.thu = b.dataset.m; try{ localStorage.setItem('nkThu', S.thu); }catch(e){} tipTat(); veThu(pham()); }; });
+  $('h-thu').innerHTML = m === 'thu' ? '<span class="tag">Thói quen</span>Giờ làm theo thứ' : '<span class="tag">So tuần</span>Giờ làm theo tuần';
+  $('d-thu').textContent = m === 'thu' ? 'Trung bình từng thứ, tính trên các ngày đã ghi.' : 'Trung bình mỗi ngày (T2–T6), mỗi cột là một tuần.';
+  (m === 'thu' ? veTheoThu : veTuan)(days);
 }
 
 /* ═════ bảng số ═════ */
