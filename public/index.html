@@ -121,6 +121,26 @@ select.dmini{max-width:170px;text-overflow:ellipsis}
 .lichchan{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);display:flex;gap:5px;flex-wrap:wrap}
 .lichchan button{flex:1;min-width:58px;background:var(--panel2);border:1px solid var(--border);color:var(--dim);border-radius:6px;padding:4px 6px;font:500 10.5px "Segoe UI",sans-serif;cursor:pointer;white-space:nowrap}
 .lichchan button:hover{border-color:var(--accent);color:var(--accent)}
+.card.lmo{z-index:30}
+.kcol{display:flex;flex-direction:column}
+#c-task{flex:1;display:flex;flex-direction:column;min-height:0}
+#c-task .hrow{flex:1 1 auto;max-height:62px}
+.kcol .kl{flex:1;display:flex;flex-direction:column;min-height:0;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.klh{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;margin-bottom:9px;flex-wrap:wrap}
+.klh small{color:var(--faint);font-size:11px}
+.klrows{flex:1;display:flex;flex-direction:column;gap:5px}
+.klr{flex:1 1 0;max-height:54px;--c:var(--accent);display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) auto;gap:10px;align-items:center;padding:5px 9px;border-radius:8px;background:rgba(10,16,32,.5);border:1px solid transparent;cursor:pointer;min-height:32px;transition:border-color .14s,background .14s}
+.klr:hover,.klr:focus{border-color:var(--border-hi);background:rgba(46,232,255,.05);outline:none}
+.klr .kn{display:flex;align-items:center;gap:7px;min-width:0;font-size:12px;color:var(--text)}
+.klr .kn i{width:8px;height:8px;border-radius:50%;flex:none;background:var(--c);box-shadow:0 0 6px var(--c)}
+.klr .kn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.klr .kv{font:600 11.5px var(--mono);color:var(--dim);text-align:right;white-space:nowrap}
+.klr .kv b{color:var(--text)}
+.klstrip{display:flex;gap:2px;align-items:center}
+.klstrip i{width:7px;height:14px;border-radius:2px;background:rgba(110,128,168,.18);flex:none}
+.klstrip i.on{background:var(--c);box-shadow:0 0 6px var(--c)}
+.klbar{height:8px;border-radius:5px;background:rgba(110,128,168,.15);overflow:hidden}
+.klbar b{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--c),color-mix(in srgb,var(--c) 55%,#fff))}
 .lichmach{margin-top:7px;font-size:10px;color:var(--faint);text-align:center}
 
 /* ── thẻ số (cỡ như HTML Vận hành .kb2: nhãn 10px · số 34px · giải thích 11px) ── */
@@ -345,11 +365,11 @@ body.vao .no{transform-box:fill-box;transform-origin:center;animation:no .6s cub
     <div class="legend" id="lg1"></div>
     <div class="box" id="c-ngay"></div>
   </section>
-  <section class="card" style="--i:10;--gc:var(--accent)">
+  <section class="card" id="cardLich" style="--i:10;--gc:var(--accent)">
     <div class="cardhead"><div>
       <h2><span class="tag">Theo giờ</span>Lịch làm việc từng ngày</h2>
-      <p class="d">Mỗi dòng là một ngày, trải từ sáng tới chiều. Ô càng sáng là lúc đó càng nhiều việc chạy cùng lúc, chỗ trống là giờ nghỉ.</p>
-    </div></div>
+      <p class="d">Mỗi dòng là một ngày (tối đa 10 ngày, mặc định 10 ngày mới nhất). Ô càng sáng là lúc đó càng nhiều việc chạy cùng lúc, chỗ trống là giờ nghỉ.</p>
+    </div><div class="lich" id="lichLoc"></div></div>
     <div class="legend" id="lg2"></div>
     <div class="box" id="c-lich"></div>
   </section>
@@ -370,7 +390,7 @@ body.vao .no{transform-box:fill-box;transform-origin:center;animation:no .6s cub
 </div>
 
 <div class="row c2c" id="s-task">
-  <section class="card" style="--i:13;--gc:var(--accent)">
+  <section class="card kcol" style="--i:13;--gc:var(--accent)">
     <div class="cardhead">
       <div><h2><span class="tag">Theo task</span>Từng task chính tốn bao nhiêu giờ</h2>
         <p class="d">Bấm một task để soi nó ở bảng nhiệt và biểu đồ bên cạnh. Dãy chấm bên phải là những ngày có làm.</p></div>
@@ -384,10 +404,11 @@ body.vao .no{transform-box:fill-box;transform-origin:center;animation:no .6s cub
     <div id="focus1" class="legend"></div>
     <div id="c-task"></div>
   </section>
-  <section class="card" style="--i:14;--gc:var(--purple)">
+  <section class="card kcol" style="--i:14;--gc:var(--purple)">
     <h2><span class="tag">Kiểu làm</span>Task nào làm đều, task nào dồn cục</h2>
     <p class="d">Ngang là số ngày có làm, dọc là trung bình giờ mỗi ngày có làm, bóng càng to càng nhiều giờ tổng.</p>
     <div class="box" id="c-bong"></div>
+    <div class="kl" id="c-kl"></div>
   </section>
 </div>
 
@@ -442,7 +463,7 @@ body.vao .no{transform-box:fill-box;transform-origin:center;animation:no .6s cub
 <div class="tip" id="tip" role="tooltip"></div>
 
 <script>
-const D = {"tasks":[{"name":"HTML Vận hành","mang":0},{"name":"Luồng xử lý alert tự động & AI detection","mang":0},{"name":"Check F2DR hằng ngày","mang":0},{"name":"Báo cáo & Slide (thực trạng, Word/Excel/PPT)","mang":0},{"name":"Project ERM","mang":1},{"name":"Phối hợp fix bug F2DR (VCS, PTDL, KTDV)","mang":0},{"name":"Đoàn Thanh Niên & Event trung tâm","mang":2},{"name":"Họp","mang":2},{"name":"Impact score","mang":0},{"name":"Task ad hoc","mang":2},{"name":"Nghiên cứu - Tự học","mang":2}],"mang":[{"name":"F2DR"},{"name":"ERM"},{"name":"Other"}],"days":[{"d":"2026-09-21","e":[[8.0,8.5,4],[8.5,9.0,7],[9.0,9.5,4],[9.5,10.5,4],[10.5,12.0,4],[13.5,14.5,4],[9.5,17.8333,0],[14.5,15.5,6],[16.0,17.0,0]]},{"d":"2026-09-22","e":[[8.25,8.6667,5],[8.75,10.0,5],[8.75,10.0,0],[9.0,10.5,0],[10.0,11.0,8],[10.0,11.0,9],[10.75,12.0,5],[10.75,12.0,5],[13.75,17.0,8],[16.5,17.5,5],[14.0,17.5,0]]},{"d":"2026-09-23","e":[[8.5,9.25,7],[9.25,9.5,5],[9.5,12.0,0],[9.75,10.25,2],[10.25,10.5,0],[10.5,11.0,6],[11.0,11.6667,3],[13.5,14.0,6],[14.0,14.25,5],[14.25,17.0,0],[17.0,17.5,3],[16.5,17.0,2]]},{"d":"2026-09-24","e":[[8.0,9.0,0],[8.0,9.0,2],[9.0,10.3333,6],[10.4167,11.0,2],[11.0,12.0,6],[13.5,15.0,0],[15.0,16.0,6],[16.0,17.5,6],[16.0,17.5,0]]},{"d":"2026-09-25","e":[[8.5,17.5,0],[16.0,18.0,0],[13.5,15.0,7],[9.0,12.0,9],[8.5,9.0,2]]},{"d":"2026-09-28","e":[[8.5,17.5,0],[8.5,17.5,1],[9.0,11.0,1],[14.0,15.5,4]]},{"d":"2026-09-29","e":[[8.0,8.5,2],[8.5,9.5,7],[9.5,12.0,1],[13.5,15.0,3],[13.5,17.0,1]]},{"d":"2026-09-30","e":[[8.0,9.0,2],[8.5,9.0,7],[9.0,9.25,2],[9.5,12.0,3],[9.5,12.0,1],[13.5,15.0,3],[13.5,15.0,1],[15.5,17.5,10],[15.5,17.5,1]]},{"d":"2026-10-01","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,9.5,3],[9.5,10.5,10],[10.5,11.0,0],[11.0,12.0,1],[13.75,15.5,10],[16.0,17.5,6]]},{"d":"2026-10-02","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,9.5,6],[9.5,12.0,6],[11.0,12.0,6],[13.5,17.5,6]]},{"d":"2026-10-05","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,11.0,6],[11.0,12.0,5],[13.5,14.0,7],[14.0,16.0,9],[16.0,17.5,9]]},{"d":"2026-10-06","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,10.0,7],[10.0,10.5,6],[10.5,11.0,9],[11.0,12.0,9],[14.0,15.0,3],[15.0,16.5,4],[16.5,17.0,7],[17.0,17.5,10]]},{"d":"2026-10-07","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,11.0,0],[11.0,12.0,3],[13.5,14.0,3],[14.0,15.5,4],[15.5,16.0,6],[16.0,16.5,9],[16.5,17.5,9]]},{"d":"2026-10-08","e":[[8.0,8.5,0],[8.5,9.0,2],[8.0,9.0,7],[9.0,10.5,7],[11.0,12.0,7],[14.0,15.0,10],[15.0,16.0,9],[16.0,17.5,10]]},{"d":"2026-10-09","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,10.5,9],[10.5,12.0,9],[13.5,15.0,9],[15.0,16.0,6],[16.0,17.5,7]]}],"last":"2026-10-09","built":"09/10 13:54"};
+const D = {"tasks":[{"name":"HTML Vận hành","mang":0},{"name":"Luồng xử lý alert tự động & AI detection","mang":0},{"name":"Check F2DR hằng ngày","mang":0},{"name":"Báo cáo & Slide (thực trạng, Word/Excel/PPT)","mang":0},{"name":"Project ERM","mang":1},{"name":"Phối hợp fix bug F2DR (VCS, PTDL, KTDV)","mang":0},{"name":"Đoàn Thanh Niên & Event trung tâm","mang":2},{"name":"Họp","mang":2},{"name":"Impact score","mang":0},{"name":"Task ad hoc","mang":2},{"name":"Nghiên cứu - Tự học","mang":2}],"mang":[{"name":"F2DR"},{"name":"ERM"},{"name":"Other"}],"days":[{"d":"2026-09-21","e":[[8.0,8.5,4],[8.5,9.0,7],[9.0,9.5,4],[9.5,10.5,4],[10.5,12.0,4],[13.5,14.5,4],[9.5,17.8333,0],[14.5,15.5,6],[16.0,17.0,0]]},{"d":"2026-09-22","e":[[8.25,8.6667,5],[8.75,10.0,5],[8.75,10.0,0],[9.0,10.5,0],[10.0,11.0,8],[10.0,11.0,9],[10.75,12.0,5],[10.75,12.0,5],[13.75,17.0,8],[16.5,17.5,5],[14.0,17.5,0]]},{"d":"2026-09-23","e":[[8.5,9.25,7],[9.25,9.5,5],[9.5,12.0,0],[9.75,10.25,2],[10.25,10.5,0],[10.5,11.0,6],[11.0,11.6667,3],[13.5,14.0,6],[14.0,14.25,5],[14.25,17.0,0],[17.0,17.5,3],[16.5,17.0,2]]},{"d":"2026-09-24","e":[[8.0,9.0,0],[8.0,9.0,2],[9.0,10.3333,6],[10.4167,11.0,2],[11.0,12.0,6],[13.5,15.0,0],[15.0,16.0,6],[16.0,17.5,6],[16.0,17.5,0]]},{"d":"2026-09-25","e":[[8.5,17.5,0],[16.0,18.0,0],[13.5,15.0,7],[9.0,12.0,9],[8.5,9.0,2]]},{"d":"2026-09-28","e":[[8.5,17.5,0],[8.5,17.5,1],[9.0,11.0,1],[14.0,15.5,4]]},{"d":"2026-09-29","e":[[8.0,8.5,2],[8.5,9.5,7],[9.5,12.0,1],[13.5,15.0,3],[13.5,17.0,1]]},{"d":"2026-09-30","e":[[8.0,9.0,2],[8.5,9.0,7],[9.0,9.25,2],[9.5,12.0,3],[9.5,12.0,1],[13.5,15.0,3],[13.5,15.0,1],[15.5,17.5,10],[15.5,17.5,1]]},{"d":"2026-10-01","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,9.5,3],[9.5,10.5,10],[10.5,11.0,0],[11.0,12.0,1],[13.75,15.5,10],[16.0,17.5,6]]},{"d":"2026-10-02","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,9.5,6],[9.5,12.0,6],[11.0,12.0,6],[13.5,17.5,6]]},{"d":"2026-10-05","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,11.0,6],[11.0,12.0,5],[13.5,14.0,7],[14.0,16.0,9],[16.0,17.5,9]]},{"d":"2026-10-06","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,10.0,7],[10.0,10.5,6],[10.5,11.0,9],[11.0,12.0,9],[14.0,15.0,3],[15.0,16.5,4],[16.5,17.0,7],[17.0,17.5,10]]},{"d":"2026-10-07","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,11.0,0],[11.0,12.0,3],[13.5,14.0,3],[14.0,15.5,4],[15.5,16.0,6],[16.0,16.5,9],[16.5,17.5,9]]},{"d":"2026-10-08","e":[[8.0,8.5,0],[8.5,9.0,2],[8.0,9.0,7],[9.0,10.5,7],[11.0,12.0,7],[14.0,15.0,10],[15.0,16.0,9],[16.0,17.5,10]]},{"d":"2026-10-09","e":[[8.0,8.5,0],[8.5,9.0,2],[9.0,10.5,9],[10.5,12.0,9],[13.5,15.0,9],[15.0,16.0,6],[16.0,17.5,7]]}],"last":"2026-10-09","built":"12/10 14:26"};
 (function(){
 "use strict";
 /* ═════ tiện ích ═════ */
@@ -501,7 +522,8 @@ function tinh(d){
 const ALL = D.days.map(tinh), CO = ALL.filter(x => x.n), byD = {};
 ALL.forEach(x => { byD[x.d] = x; });
 const DS = CO.map(x => x.d);
-const S = {gio:'cot', thu:'tuan', cach:'ngay', ngay:'', tu:'', den:'', nhanh:'', cal:null, mang:-1, xep:'h', soi:null, cu:false, bk:'h', bd:'desc', mo:null};
+let LP = [];
+const S = {lt:null, lc:null, kl:'deu', gio:'cot', thu:'tuan', cach:'ngay', ngay:'', tu:'', den:'', nhanh:'', cal:null, mang:-1, xep:'h', soi:null, cu:false, bk:'h', bd:'desc', mo:null};
 
 function pham(){
   if(S.cach === 'khoang' && S.tu && S.den) return ALL.filter(x => x.d >= S.tu && x.d <= S.den);
@@ -694,11 +716,15 @@ function veNgayChart(days, A){
 
 /* ═════ ② lịch làm việc theo giờ (barcode) ═════ */
 function veLich(days){
-  const host = $('c-lich'), co = days.filter(x => x.n);
+  const host = $('c-lich'), pool = days.filter(x => x.n); LP = pool;
+  if(S.lt && !pool.some(x => x.d >= S.lt.tu && x.d <= S.lt.den)) S.lt = null;
+  const sel = S.lt ? pool.filter(x => x.d >= S.lt.tu && x.d <= S.lt.den) : pool, co = sel.slice(-10);
+  veLichLoc(pool, co);
   $('lg2').innerHTML = `<span><i style="background:color-mix(in srgb,var(--accent) 35%,#0a1020)"></i>1 việc</span><span><i style="background:color-mix(in srgb,var(--accent) 70%,#0a1020)"></i>2 việc</span><span><i style="background:var(--accent);box-shadow:0 0 8px var(--accent)"></i>3+ việc cùng lúc</span>`;
   if(!co.length){ host.innerHTML = '<div class="trong">Chưa có dữ liệu</div>'; return; }
   const h0 = Math.floor(Math.min(...co.map(x => x.s0))), h1 = Math.ceil(Math.max(...co.map(x => x.e1)));
-  const Wd = W(host), L = 68, R = 52, rh = 22, gap = 5, T = 20, H = T + co.length*(rh+gap) + 8;
+  const rh = Math.max(22, Math.min(30, Math.round(265/co.length) - 5)), gap = 5, Wd = W(host), L = 68, R = 52, T = 20, H = T + co.length*(rh+gap) + 8;
+  $('lg2').innerHTML += `<span style="margin-left:auto">Đang xem <b style="color:var(--text)">${co.length}</b>${sel.length > co.length ? '/' + sel.length : ''} ngày</span>`;
   const pw = Wd - L - R, step = .25, n = Math.round((h1-h0)/step), cw = pw/n, X = h => L + (h-h0)/(h1-h0)*pw;
   let s = `<svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Lịch làm việc theo giờ">`;
   for(let h = h0; h <= h1; h++) s += `<line x1="${X(h)}" x2="${X(h)}" y1="${T-4}" y2="${H-6}" stroke="rgba(110,128,168,${h === 12 ? .3 : .12})"/><text class="axm" x="${X(h)}" y="${T-8}" text-anchor="middle">${h}h</text>`;
@@ -730,6 +756,59 @@ function veLich(days){
     bam(el, () => moNgay(x.d));
   });
 }
+
+/* chọn khoảng ngày riêng cho lịch làm việc (tối đa 10 ngày làm việc), dùng lại giao diện lịch của bộ lọc ngày chung */
+function monOf(s){ const q = pd(s); q.setUTCDate(q.getUTCDate() - (q.getUTCDay() + 6) % 7); return q.toISOString().slice(0, 10); }
+function veLichLoc(pool, co){
+  const host = $('lichLoc');
+  const lab = S.lt ? dm(S.lt.tu) + ' – ' + dm(S.lt.den) : (co.length ? '10 ngày mới nhất' : 'Chưa có dữ liệu');
+  host.innerHTML = `<span class="lichnut${S.lc ? ' mo' : ''}" id="lichLocNut"><span class="ic2">▦</span><span>${lab}</span>${S.lt ? '<span class="xoa" title="Về 10 ngày mới nhất">×</span>' : ''}</span>`;
+  $('cardLich').classList.toggle('lmo', !!S.lc);
+  if(!pool.length) return;
+  $('lichLocNut').onclick = e => {
+    e.stopPropagation();
+    if(e.target.classList.contains('xoa')){ S.lt = null; S.lc = null; veLich(pham()); return; }
+    if(S.lc){ S.lc = null; veLich(pham()); return; }
+    S.lc = {thang: (S.lt ? S.lt.tu : pool[pool.length-1].d).slice(0, 7), chon: null}; veLich(pham());
+  };
+  if(S.lc) calLoc(host);
+}
+function calLoc(host){
+  let b = host.querySelector('.lichbang');
+  if(!b){ b = document.createElement('div'); b.className = 'lichbang'; b.addEventListener('click', e => e.stopPropagation()); host.appendChild(b); }
+  const pool = LP, ix = {}; pool.forEach((x, i) => { ix[x.d] = i; });
+  const [y, m] = S.lc.thang.split('-').map(Number), so = new Date(y, m, 0).getDate(), lui = (new Date(y, m-1, 1).getDay() + 6) % 7;
+  const iso = d => y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+  const A = S.lc.chon || (S.lt && S.lt.tu), B = S.lc.chon ? null : (S.lt && S.lt.den), tmin = pool[0].d.slice(0, 7), tmax = pool[pool.length-1].d.slice(0, 7);
+  let o = '<span class="tat"></span>'.repeat(lui);
+  for(let d = 1; d <= so; d++){
+    const v = iso(d); let ok = ix[v] !== undefined; if(ok && S.lc.chon) ok = Math.abs(ix[v] - ix[S.lc.chon]) <= 9;
+    let cls = ok ? 'co' : 'tat';
+    if(ok && A && B){ if(v === A || v === B) cls += ' dau-mut ' + (A === B ? 'don' : v === A ? 'trai' : 'phai'); else if(v > A && v < B) cls += ' trong-khoang'; }
+    else if(ok && A && v === A) cls += ' dau-mut don';
+    o += `<span class="${cls}"${ok ? ` data-v="${v}"` : ''}>${d}</span>`;
+  }
+  b.innerHTML = `<div class="lichdau"><button data-t="-1"${S.lc.thang <= tmin ? ' disabled' : ''}>‹</button><b>Tháng ${m}/${y}</b><button data-t="1"${S.lc.thang >= tmax ? ' disabled' : ''}>›</button></div>`
+    + `<div class="lichthu"><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span></div><div class="licho">${o}</div>`
+    + `<div class="lichchan"><button data-q="tn">Tuần này</button><button data-q="tt">Tuần trước</button><button data-q="7">7 ngày</button><button data-q="0">Mới nhất</button></div>`
+    + `<div class="lichmach">${S.lc.chon ? 'Đã chọn <b>' + dm(S.lc.chon) + '</b> — bấm tiếp ngày kết thúc' : 'Bấm ngày bắt đầu, rồi ngày kết thúc (tối đa 10 ngày làm việc)'}</div>`;
+  b.querySelectorAll('.lichdau button').forEach(x => x.onclick = () => { const d = new Date(y, m - 1 + +x.dataset.t, 1); S.lc.thang = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); calLoc(host); });
+  b.querySelectorAll('.licho .co').forEach(x => x.onclick = () => {
+    const v = x.dataset.v;
+    if(!S.lc.chon){ S.lc.chon = v; calLoc(host); return; }
+    const a = S.lc.chon <= v ? S.lc.chon : v, z = S.lc.chon <= v ? v : S.lc.chon;
+    S.lt = {tu: a, den: z}; S.lc = null; veLich(pham());
+  });
+  b.querySelectorAll('.lichchan button').forEach(x => x.onclick = () => {
+    const q = x.dataset.q, last = pool[pool.length-1].d; let r = null;
+    if(q === 'tn') r = pool.filter(z => monOf(z.d) === monOf(last));
+    else if(q === 'tt'){ const q0 = pd(monOf(last)); q0.setUTCDate(q0.getUTCDate() - 7); const k = q0.toISOString().slice(0, 10); r = pool.filter(z => monOf(z.d) === k); }
+    else if(q === '7') r = pool.slice(-7);
+    S.lt = r && r.length ? {tu: r[0].d, den: r[r.length-1].d} : null; S.lc = null; veLich(pham());
+  });
+}
+document.addEventListener('click', e => { if(S.lc && !e.target.closest('#lichLoc')){ S.lc = null; veLich(pham()); } });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && S.lc){ S.lc = null; veLich(pham()); } });
 
 /* ═════ ③ donut mảng ═════ */
 function arc(cx, cy, r, a0, a1){ const p = a => [cx + r*Math.cos(a), cy + r*Math.sin(a)], s = p(a0), e = p(a1), big = a1 - a0 > Math.PI ? 1 : 0; return `M${s[0].toFixed(2)},${s[1].toFixed(2)} A${r},${r} 0 ${big} 1 ${e[0].toFixed(2)},${e[1].toFixed(2)}`; }
@@ -830,10 +909,70 @@ function veTask(A){
 }
 
 /* ═════ ⑥ biểu đồ bóng: đều hay dồn cục ═════ */
-function veBong(A){
+/* ═════ ⑥b khối tab nhỏ dưới biểu đồ bóng ═════ */
+let KLN = 6, KLA = null, KLH = 380;
+function veKl(A){
+  KLA = A;
+  const host = $('c-kl'); if(!host) return;
+  const co = A.co, nco = co.length, ts = A.tasks.filter(t => t.h && (S.mang < 0 || t.mang === S.mang));
+  if(!ts.length || !nco){ host.innerHTML = ''; return; }
+  const inf = ts.map(t => {
+    const idx = []; co.forEach((x, i) => { if(x.t[t.i]) idx.push(i); });
+    let best = 0, bestD = '', cur = 0, run = 0, bestRun = 0;
+    co.forEach((x, i) => { const v = x.t[t.i] || 0; if(v > best){ best = v; bestD = x.d; } if(v){ run++; if(run > bestRun) bestRun = run; } else run = 0; });
+    for(let i = nco - 1; i >= 0 && co[i].t[t.i]; i--) cur++;
+    const last = idx[idx.length-1];
+    return {t, dem:idx.length, tb:t.h/idx.length, best, bestD, cur, bestRun, gap:nco - 1 - last, lastD:co[last].d, on:new Set(idx)};
+  });
+  const TABS = [['deu', 'Đều đặn'], ['don', 'Dồn cục'], ['chuoi', 'Chuỗi liền'], ['lau', 'Lâu chưa làm']];
+  if(!TABS.some(q => q[0] === S.kl)) S.kl = 'deu';
+  const N = KLN, rec = co.slice(-14), mxTb = Math.max(...inf.map(z => z.tb));
+  const strip = z => `<span class="klstrip">${rec.map(x => `<i class="${x.t[z.t.i] ? 'on' : ''}"></i>`).join('')}</span>`;
+  let rows, mo;
+  if(S.kl === 'deu'){
+    mo = 'Task xuất hiện ở nhiều ngày nhất. Mỗi ô là một ngày gần đây, ô sáng là hôm đó có làm.';
+    rows = inf.slice().sort((a, b) => b.dem - a.dem || b.t.h - a.t.h).slice(0, N).map(z => [z, strip(z), `<b>${z.dem}</b>/${nco} ngày`]);
+  } else if(S.kl === 'don'){
+    mo = 'Mỗi lần ngồi vào làm thì làm lâu nhất: trung bình giờ trên mỗi ngày có làm.';
+    rows = inf.slice().sort((a, b) => b.tb - a.tb).slice(0, N).map(z => [z, `<span class="klbar"><b style="width:${(z.tb/mxTb*100).toFixed(1)}%"></b></span>`, `<b>${hm(z.tb)}</b>/ngày`]);
+  } else if(S.kl === 'chuoi'){
+    mo = 'Số ngày làm việc liên tiếp có động tới task (kỷ lục), và đang liền bao nhiêu ngày tính đến hôm nay.';
+    rows = inf.slice().sort((a, b) => b.bestRun - a.bestRun || b.cur - a.cur).slice(0, N).map(z => [z, strip(z), `<b>${z.bestRun}</b> liền${z.cur ? ` · đang ${z.cur}` : ''}`]);
+  } else {
+    mo = 'Task đã bao lâu rồi chưa đụng tới, tính theo số ngày làm việc kể từ lần cuối.';
+    const mg = Math.max(1, ...inf.map(z => z.gap));
+    rows = inf.slice().sort((a, b) => b.gap - a.gap || a.t.h - b.t.h).slice(0, N).map(z => [z, `<span class="klbar" style="--c:var(--orange)"><b style="width:${Math.max(4, z.gap/mg*100).toFixed(1)}%"></b></span>`, z.gap ? `<b>${z.gap}</b> ngày · ${dm(z.lastD)}` : '<b>hôm nay</b>']);
+  }
+  host.innerHTML = `<div class="klh"><div class="seg" id="klTab" role="group" aria-label="Góc nhìn">${TABS.map(q => `<button data-k="${q[0]}" aria-pressed="${S.kl === q[0]}">${q[1]}</button>`).join('')}</div><small>bấm một dòng để soi task</small></div>`
+    + `<div class="klrows">${rows.map((r, i) => `<div class="klr" data-i="${r[0].t.i}" tabindex="0" role="button" style="--c:${HEX[r[0].t.mang]}"><div class="kn"><i></i><span>${esc(r[0].t.name)}</span></div>${r[1]}<div class="kv">${r[2]}</div></div>`).join('')}</div>`
+    + `<p class="d" style="margin:8px 0 0;font-size:11.5px">${mo}</p>`;
+  host.querySelectorAll('#klTab button').forEach(b => b.onclick = () => { S.kl = b.dataset.k; veKl(A); });
+  host.querySelectorAll('.klr').forEach(r => { const z = inf.find(q => q.t.i === +r.dataset.i);
+    tip(r, () => tipTask(z.t, A) + `<div class="sep"></div>${tr('Ngày làm nhiều nhất', dm(z.bestD) + ' · ' + hm(z.best))}${tr('Lần làm cuối', dm(z.lastD))}${tr('Chuỗi liền dài nhất', z.bestRun + ' ngày')}` + goi('Bấm để soi task này'));
+    bam(r, () => soi(z.t.i)); });
+}
+
+/* hai thẻ Theo task / Kiểu làm luôn cao bằng nhau và đều không trống: chọn số dòng của khối tab sao cho thẻ phải vừa bằng thẻ trái, phần dư nhỏ do các dòng tự giãn */
+function balanceTK(){
+  const L = $('c-task').closest('section'), R = $('c-kl').closest('section'), kl = $('c-kl');
+  if(!KLA) return;
+  L.style.alignSelf = R.style.alignSelf = 'start';
+  KLH = 380; KLN = 3; veBongChart(KLA); veKl(KLA);
+  if(kl.innerHTML){
+    const lh = L.getBoundingClientRect().height; let best = null;
+    for(let h = 380; h >= 260; h -= 20){ KLH = h; veBongChart(KLA);
+      for(let n = 2; n <= 9; n++){ KLN = n; veKl(KLA); const rh = R.getBoundingClientRect().height; if(rh > lh + 1) break;
+        const sl = lh - rh, ok = sl <= 14, bok = best && best.sl <= 14; if(!best || (ok && !bok) || (ok && bok && (n > best.n || (n === best.n && h > best.h))) || (!ok && !bok && sl < best.sl)) best = {h, n, sl}; } }
+    if(!best) best = {h:260, n:2};
+    KLH = best.h; KLN = best.n; veBongChart(KLA); veKl(KLA);
+  }
+  L.style.alignSelf = R.style.alignSelf = '';
+}
+function veBong(A){ KLA = A; veBongChart(A); balanceTK(); }
+function veBongChart(A){
   const host = $('c-bong'), ts = A.tasks.filter(t => t.h && (S.mang < 0 || t.mang === S.mang));
   if(!ts.length){ host.innerHTML = '<div class="trong">Không có task nào trong bộ lọc này</div>'; return; }
-  const Wd = W(host), H = 380, L = 40, R = 16, T = 34, B = 44, pw = Wd - L - R, ph = H - T - B;
+  const Wd = W(host), H = KLH, L = 40, R = 16, T = 34, B = 44, pw = Wd - L - R, ph = H - T - B;
   const xmax = Math.max(A.nd, 1), ymax = niceMax(Math.max(...ts.map(t => t.h/t.days)) * 1.12), hmax = Math.max(...ts.map(t => t.h));
   const X = v => L + v/xmax*pw, Y = v => T + ph - v/ymax.top*ph, Rr = h => 7 + 20*Math.sqrt(h/hmax);
   const mx = xmax/2, my = ymax.top/2;
